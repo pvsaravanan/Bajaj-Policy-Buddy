@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bajaj Finserv PolicyBuddy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Add pdf.js and mammoth.js for file parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #111827;
+        }
+        /* Landing Page Specific Styles */
+        .hero-section {
+            background: linear-gradient(135deg, #0072bb 0%, #00338d 100%);
+        }
+        .feature-card {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .form-input-container {
+            position: relative;
+        }
+        .form-input {
+             background-color: #f3f4f6;
+             border: 1px solid #d1d5db;
+             border-radius: 0.5rem;
+             padding: 0.75rem 1rem;
+             padding-left: 2.5rem; /* Space for icon */
+             width: 100%;
+             transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #0072bb;
+            background-color: white;
+            box-shadow: 0 0 0 2px rgba(0, 114, 187, 0.2);
+        }
+        .form-input-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        /* App & General Styles */
+        .btn-primary {
+            background-color: #0072bb;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .btn-primary:hover {
+            background-color: #005a9a;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 10px -3px rgba(0,0,0,0.15);
+        }
+        .btn-primary:disabled {
+            background-color: #a5d8f3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0072bb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .prose-blockquote {
+            border-left: 4px solid #e5e7eb;
+            padding-left: 1rem;
+            font-style: italic;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page Section -->
+    <div id="landing-section">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-sm sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex-shrink-0 flex items-center">
+                         <span class="text-xl font-bold text-gray-800">Bajaj Finserv PolicyBuddy</span>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-4">
+                        <div id="auth-links">
+                            <a href="#" id="auth-nav-btn" class="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium">Sign In / Sign Up</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="hero-section text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">Bajaj Finserv PolicyBuddy</h1>
+                <p class="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-blue-100">
+                    Understand your policy, one click at a time.
+                </p>
+                <div class="mt-8">
+                    <a href="#" id="get-started-btn" class="btn-primary">Get Started for Free</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="py-16 bg-white">
+             <!-- Auth Section -->
+            <section id="auth-section" class="mt-12">
+                <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden md:flex">
+                    <!-- Left Panel -->
+                    <div class="hidden md:block md:w-1/2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1581092921462-20528a038933?q=80&w=1887&auto=format&fit=crop')">
+                         <div class="p-8 text-white bg-black bg-opacity-40 h-full flex flex-col justify-center">
+                            <h2 class="text-3xl font-bold">Secure & Simple</h2>
+                            <p class="mt-2">Access your policy insights with our secure and easy-to-use platform.</p>
+                        </div>
+                    </div>
+                    <!-- Right Panel -->
+                    <div class="w-full md:w-1/2 p-8">
+                        <div class="flex border-b border-gray-200">
+                            <button id="show-signin-tab" class="flex-1 py-2 text-center font-medium border-b-2 border-blue-500 text-blue-600">Sign In</button>
+                            <button id="show-signup-tab" class="flex-1 py-2 text-center font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Sign Up</button>
+                        </div>
+                        
+                        <!-- Auth Error Display -->
+                        <div id="auth-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md my-4" role="alert"></div>
+
+                        <!-- Sign In Form -->
+                        <form id="signin-form" class="mt-8 space-y-6">
+                            <div class="form-input-container">
+                                <svg class="form-input-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>
+                                <input type="email" name="email" class="form-input" placeholder="Email Address" required>
+                            </div>
+                            <div class="form-input-container">
+                                <svg class="form-input-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                                <input type="password" name="password" class="form-input" placeholder="Password" required>
+                            </div>
+                            <button type="submit" class="btn-primary w-full">Sign In</button>
+                        </form>
+
+                        <!-- Sign Up Form -->
+                        <form id="signup-form" class="hidden mt-8 space-y-6">
+                             <div class="form-input-container">
+                                <svg class="form-input-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>
+                                <input type="email" name="email" class="form-input" placeholder="Email Address" required>
+                            </div>
+                            <div class="form-input-container">
+                                <svg class="form-input-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                                <input type="password" name="password" class="form-input" placeholder="Password (min. 6 characters)" required>
+                            </div>
+                            <button type="submit" class="btn-primary w-full">Create Account</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section id="features" class="mt-24 bg-gray-50 py-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold text-gray-900">Powerful Features, Simple Interface</h2>
+                        <p class="mt-2 text-lg text-gray-600">Everything you need to make informed decisions, faster.</p>
+                    </div>
+                    <div class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        <div class="feature-card">
+                            <h3 class="text-xl font-semibold">Multi-Format Support</h3>
+                            <p class="mt-2 text-gray-500">Effortlessly process PDF, DOCX, and TXT files without any conversion needed.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3 class="text-xl font-semibold">AI-Powered Analysis</h3>
+                            <p class="mt-2 text-gray-500">Leverages advanced LLMs for semantic understanding that goes beyond keywords.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3 class="text-xl font-semibold">Structured JSON Output</h3>
+                            <p class="mt-2 text-gray-500">Get predictable, machine-readable results for easy integration with other systems.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3 class="text-xl font-semibold">Clause-Level Justification</h3>
+                            <p class="mt-2 text-gray-500">Every answer is backed by verbatim quotes from your document for full transparency.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3 class="text-xl font-semibold">Secure & Confidential</h3>
+                            <p class="mt-2 text-gray-500">Your documents are processed securely and are never stored or used for training.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3 class="text-xl font-semibold">Developer Friendly</h3>
+                            <p class="mt-2 text-gray-500">Simple to use for individuals, powerful enough to be integrated into enterprise workflows.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white mt-24">
+            <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
+                <p class="text-base text-gray-400">&copy; 2025 Bajaj Finserv PolicyBuddy. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Document Processing App Section (Initially Hidden) -->
+    <div id="app-section" class="hidden">
+         <nav class="bg-white shadow-sm sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex-shrink-0 flex items-center">
+                         <span class="text-xl font-bold text-gray-800">Bajaj Finserv PolicyBuddy</span>
+                    </div>
+                    <div id="user-display" class="hidden md:flex items-center">
+                        <span id="user-email" class="text-sm font-medium text-gray-600"></span>
+                        <button id="sign-out-btn" class="ml-4 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="p-4 md:p-8 max-w-4xl mx-auto">
+            <!-- Header -->
+            <header class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Policy Document Analyzer</h1>
+                <p class="mt-2 text-gray-600">Upload your policy and ask a question to get a clear, simple answer.</p>
+            </header>
+
+            <main class="space-y-8">
+                <!-- Step 1: Input Document -->
+                <div class="card p-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Step 1: Provide the Document</h2>
+                    <p class="text-sm text-gray-500 mb-4">You can paste the document content below or upload a .txt, .pdf, or .docx file.</p>
+                    <textarea id="documentText" rows="10" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Paste your policy, contract, or any other document text here..."></textarea>
+                    <div class="mt-4 text-center">
+                        <span class="text-gray-500 mx-4">OR</span>
+                    </div>
+                    <div class="mt-4 flex justify-center">
+                        <label for="fileUpload" class="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                              <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Upload .txt, .pdf, .docx File
+                        </label>
+                        <input id="fileUpload" type="file" class="hidden" accept=".txt,.pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                    </div>
+                     <p id="fileName" class="text-center text-sm text-gray-500 mt-2"></p>
+                </div>
+
+                <!-- Step 2: Input Query -->
+                <div class="card p-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Step 2: Ask a Question</h2>
+                    <p class="text-sm text-gray-500 mb-4">Enter your query in natural language. For example: "Is knee surgery covered for a 46-year-old with a 3-month policy?"</p>
+                    <input type="text" id="queryText" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter your query here...">
+                </div>
+
+                <!-- Step 3: Process and View Results -->
+                <div class="text-center">
+                    <button id="processButton" class="btn-primary w-full md:w-auto">
+                        Process Document
+                    </button>
+                </div>
+
+                <!-- Results Section -->
+                <div id="resultsContainer" class="card p-6 hidden">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Analysis Result</h2>
+                    <div id="loader" class="loader mx-auto my-8 hidden"></div>
+                    <div id="error" class="text-red-600 bg-red-100 p-4 rounded-md hidden"></div>
+                    <div id="resultContent" class="space-y-6">
+                        <!-- Dynamic content will be inserted here -->
+                    </div>
+                </div>
+            </main>
+
+            <footer class="text-center mt-12 text-sm text-gray-500">
+                <p>Powered by Google's Gemini API</p>
+            </footer>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBYKCtXgiz4F1_vOBx6gzc6mC7Qq-92oUk",
+            authDomain: "bajaj-policy-iq.firebaseapp.com",
+            projectId: "bajaj-policy-iq",
+            storageBucket: "bajaj-policy-iq.appspot.com",
+            messagingSenderId: "179471642549",
+            appId: "1:179471642549:web:8be9529f1e96039254b3fc",
+            measurementId: "G-BSR03BQTF8"
+        };
+        
+        // --- Initialize Firebase and Authentication ---
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // --- DOM Elements ---
+        const landingSection = document.getElementById('landing-section');
+        const appSection = document.getElementById('app-section');
+        const signupForm = document.getElementById('signup-form');
+        const signinForm = document.getElementById('signin-form');
+        const authError = document.getElementById('auth-error');
+        const userDisplay = document.getElementById('user-display');
+        const userEmailDisplay = document.getElementById('user-email');
+        const signOutBtn = document.getElementById('sign-out-btn');
+        const getStartedBtn = document.getElementById('get-started-btn');
+        const authNavBtn = document.getElementById('auth-nav-btn');
+        const authLinks = document.getElementById('auth-links');
+        const showSignInTab = document.getElementById('show-signin-tab');
+        const showSignUpTab = document.getElementById('show-signup-tab');
+
+
+        // --- Authentication State Listener ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                console.log('User is signed in:', user.email);
+                showApp(user);
+            } else {
+                // User is signed out
+                console.log('User is signed out.');
+                showLanding();
+            }
+        });
+
+        // --- UI Switching Logic ---
+        function showApp(user) {
+            landingSection.classList.add('hidden');
+            appSection.classList.remove('hidden');
+            userDisplay.classList.remove('hidden');
+            if(authLinks) authLinks.classList.add('hidden');
+            userEmailDisplay.textContent = user.email;
+            window.scrollTo(0, 0);
+        }
+
+        function showLanding() {
+            landingSection.classList.remove('hidden');
+            appSection.classList.add('hidden');
+            userDisplay.classList.add('hidden');
+            if(authLinks) authLinks.classList.remove('hidden');
+        }
+
+        // --- Event Listeners ---
+        getStartedBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        if(authNavBtn) {
+            authNavBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+        
+        // Auth Tab Switching
+        showSignInTab.addEventListener('click', () => {
+            signinForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+            showSignInTab.classList.add('border-blue-500', 'text-blue-600');
+            showSignInTab.classList.remove('border-transparent', 'text-gray-500');
+            showSignUpTab.classList.add('border-transparent', 'text-gray-500');
+            showSignUpTab.classList.remove('border-blue-500', 'text-blue-600');
+        });
+
+        showSignUpTab.addEventListener('click', () => {
+            signupForm.classList.remove('hidden');
+            signinForm.classList.add('hidden');
+            showSignUpTab.classList.add('border-blue-500', 'text-blue-600');
+            showSignUpTab.classList.remove('border-transparent', 'text-gray-500');
+            showSignInTab.classList.add('border-transparent', 'text-gray-500');
+            showSignInTab.classList.remove('border-blue-500', 'text-blue-600');
+        });
+
+
+        // --- Sign Up Logic ---
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = signupForm.email.value;
+            const password = signupForm.password.value;
+            
+            authError.textContent = '';
+            authError.classList.add('hidden');
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                console.log("Sign up successful:", userCredential.user);
+            } catch (error) {
+                console.error("Sign up error:", error);
+                authError.textContent = error.message;
+                authError.classList.remove('hidden');
+            }
+        });
+        
+        // --- Sign In Logic ---
+        signinForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = signinForm.email.value;
+            const password = signinForm.password.value;
+
+            authError.textContent = '';
+            authError.classList.add('hidden');
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                console.log("Sign in successful:", userCredential.user);
+            } catch (error) {
+                console.error("Sign in error:", error);
+                authError.textContent = error.message;
+                authError.classList.remove('hidden');
+            }
+        });
+
+        // --- Sign Out Logic ---
+        signOutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                console.log("Sign out successful.");
+            } catch (error) {
+                console.error("Sign out error:", error);
+            }
+        });
+
+        // --- App-specific JS (document processing) ---
+        const documentText = document.getElementById('documentText');
+        const fileUpload = document.getElementById('fileUpload');
+        const fileNameDisplay = document.getElementById('fileName');
+        const queryText = document.getElementById('queryText');
+        const processButton = document.getElementById('processButton');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const loader = document.getElementById('loader');
+        const errorDisplay = document.getElementById('error');
+        const resultContent = document.getElementById('resultContent');
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+
+        fileUpload.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            fileNameDisplay.textContent = `Parsing ${file.name}...`;
+            processButton.disabled = true;
+            documentText.value = '';
+
+            try {
+                const extension = file.name.split('.').pop().toLowerCase();
+                let text = '';
+
+                if (extension === 'txt') {
+                    text = await file.text();
+                } else if (extension === 'pdf') {
+                    text = await parsePdf(file);
+                } else if (extension === 'docx') {
+                    text = await parseDocx(file);
+                } else {
+                    throw new Error('Unsupported file type. Please upload a .txt, .pdf, or .docx file.');
+                }
+
+                documentText.value = text;
+                fileNameDisplay.textContent = `File loaded: ${file.name}`;
+            } catch (err) {
+                showError(`Error parsing file: ${err.message}`);
+                fileNameDisplay.textContent = '';
+            } finally {
+                processButton.disabled = false;
+                fileUpload.value = '';
+            }
+        });
+
+        async function parsePdf(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+            let fullText = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                fullText += textContent.items.map(item => item.str).join(' ') + '\n';
+            }
+            return fullText;
+        }
+
+        async function parseDocx(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const result = await mammoth.extractRawText({ arrayBuffer });
+            return result.value;
+        }
+
+        processButton.addEventListener('click', async () => {
+            const doc = documentText.value.trim();
+            const query = queryText.value.trim();
+
+            if (!doc || !query) {
+                showError('Please provide both a document and a query.');
+                return;
+            }
+
+            resultsContainer.classList.remove('hidden');
+            resultContent.classList.add('hidden');
+            errorDisplay.classList.add('hidden');
+            loader.classList.remove('hidden');
+            processButton.disabled = true;
+            processButton.textContent = 'Processing...';
+
+            try {
+                const prompt = `
+                    You are an expert document analysis system. Your task is to analyze the provided document based on the user's query and return a structured JSON response.
+                    **DOCUMENT:**
+                    ---
+                    ${doc}
+                    ---
+                    **USER QUERY:**
+                    "${query}"
+                    **INSTRUCTIONS:**
+                    1. Carefully read the user's query and the entire document.
+                    2. Identify the key details in the query (e.g., age, procedure, location, policy duration).
+                    3. Search the document for clauses or rules that are relevant to the query. Use semantic understanding, not just keyword matching.
+                    4. Evaluate the retrieved clauses to determine a final decision.
+                    5. Formulate a direct, conversational answer to the user's query for the 'simpleJustification' field.
+                    6. Formulate a clear, detailed justification for your decision for the 'justification' field, explaining how the clauses support it.
+                    7. Return a JSON object that strictly follows the provided schema. The 'clauses' array must contain the exact, verbatim text of the supporting clauses from the document.
+                `;
+
+                const schema = {
+                    type: "OBJECT",
+                    properties: {
+                        simpleJustification: { 
+                            type: "STRING", 
+                            description: "A direct, natural language answer to the user's original query. For example: 'Yes, knee surgery is covered for this individual.' or 'No, the claim is rejected because the policy is too new.'" 
+                        },
+                        decision: { type: "STRING", description: "The final decision, e.g., 'Approved', 'Rejected', 'Partially Approved', 'Information Provided'." },
+                        amount: { type: "NUMBER", description: "The monetary amount determined, if applicable. If not applicable, return 0." },
+                        justification: { type: "STRING", description: "A detailed, formal explanation of how the decision was reached based on the clauses." },
+                        clauses: { type: "ARRAY", description: "An array of the exact, verbatim clauses from the document that support the decision.", items: { type: "STRING" } }
+                    },
+                    required: ["simpleJustification", "decision", "justification", "clauses"]
+                };
+                
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }] }],
+                    generationConfig: { responseMimeType: "application/json", responseSchema: schema }
+                };
+
+                const result = await callGeminiWithBackoff(payload);
+                renderResults(result);
+
+            } catch (err) {
+                console.error('An error occurred:', err);
+                showError(`An unexpected error occurred. Please check the console for details. Message: ${err.message}`);
+            } finally {
+                loader.classList.add('hidden');
+                processButton.disabled = false;
+                processButton.textContent = 'Process Document';
+            }
+        });
+        
+        async function callGeminiWithBackoff(payload, maxRetries = 3) {
+            let attempt = 0;
+            let delay = 1000;
+            const apiKey = "AIzaSyBHAXsoR69m1c82kYVCl6AFm3udQh7y9XA"; 
+
+            while (attempt < maxRetries) {
+                try {
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorBody = await response.json();
+                        throw new Error(`API Error: ${response.status} ${response.statusText}. Details: ${JSON.stringify(errorBody)}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates[0]?.content?.parts?.[0]) {
+                        return JSON.parse(result.candidates[0].content.parts[0].text);
+                    } else {
+                        throw new Error("Invalid response structure from API.");
+                    }
+
+                } catch (error) {
+                    attempt++;
+                    if (attempt >= maxRetries) throw error;
+                    console.log(`Attempt ${attempt} failed. Retrying in ${delay / 1000}s...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        function renderResults(data) {
+            resultContent.innerHTML = '';
+            
+            let decisionColorClass = 'bg-gray-100 text-gray-800';
+            if (data.decision.toLowerCase().includes('approved')) decisionColorClass = 'bg-green-100 text-green-800';
+            else if (data.decision.toLowerCase().includes('rejected')) decisionColorClass = 'bg-red-100 text-red-800';
+            else if (data.decision.toLowerCase().includes('partially')) decisionColorClass = 'bg-yellow-100 text-yellow-800';
+            
+            resultContent.innerHTML = `
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Decision</h3>
+                    <p class="mt-1 text-2xl font-semibold inline-block px-4 py-1 rounded-full ${decisionColorClass}">${data.decision}</p>
+                </div>
+                ${data.amount > 0 ? `
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Amount</h3>
+                    <p class="mt-1 text-xl font-semibold text-gray-700">$${data.amount.toLocaleString()}</p>
+                </div>` : ''}
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Simple Answer</h3>
+                    <p class="mt-1 text-gray-600 text-lg">${data.simpleJustification}</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Detailed Justification</h3>
+                    <p class="mt-1 text-gray-600">${data.justification}</p>
+                </div>
+                ${data.clauses && data.clauses.length > 0 ? `
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Referenced Clauses</h3>
+                    <div class="mt-2 space-y-4">
+                        ${data.clauses.map(clause => `
+                            <blockquote class="prose-blockquote bg-gray-50 p-4 rounded-md">${clause}</blockquote>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+            `;
+            resultContent.classList.remove('hidden');
+        }
+
+        function showError(message) {
+            resultsContainer.classList.remove('hidden');
+            resultContent.classList.add('hidden');
+            loader.classList.add('hidden');
+            errorDisplay.textContent = message;
+            errorDisplay.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
