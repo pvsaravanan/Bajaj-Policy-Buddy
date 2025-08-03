@@ -55,9 +55,5 @@ PolicyBuddy performs:
   - Clean, minimal interface.
   - Landing page + interactive question panel.
 
-- **🖥️ Zero Backend**
-  - Fully static single-page app (`index.html`)
-  - No deployment complexities or database setup.
-
 ---
 
